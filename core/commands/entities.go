@@ -14,10 +14,6 @@ func (c *CreateThing) CommandType() Type {
 }
 
 func (c *CreateThing) Execute(future *utils.Future) {
-	for k, v := range c.Features {
-		v.Id = k
-	}
-
 	thing := &models.Thing{
 		ThingId:   c.ThingId,
 		Features:  c.Features,
@@ -53,9 +49,9 @@ func (d *DeleteThing) Execute(future *utils.Future) {
 }
 
 type CreateFeature struct {
-	ThingId   models.ThingId  `json:"thing_id"`
-	FeatureId string          `json:"feature_id"`
-	Feature   *models.Feature `json:"feature"`
+	ThingId   models.ThingId `json:"thing_id"`
+	FeatureId string         `json:"feature_id"`
+	Feature   json.Value     `json:"feature"`
 }
 
 func (c *CreateFeature) CommandType() Type {
@@ -83,9 +79,9 @@ func (m *ModifyFeature) Execute(future *utils.Future) {
 }
 
 type OverwriteFeature struct {
-	ThingId   models.ThingId  `json:"thing_id"`
-	FeatureId string          `json:"feature_id"`
-	Feature   *models.Feature `json:"feature"`
+	ThingId   models.ThingId `json:"thing_id"`
+	FeatureId string         `json:"feature_id"`
+	Feature   json.Value     `json:"feature"`
 }
 
 func (o *OverwriteFeature) CommandType() Type {
@@ -94,7 +90,6 @@ func (o *OverwriteFeature) CommandType() Type {
 
 func (o *OverwriteFeature) Execute(future *utils.Future) {
 	// TODO: overwrite feature
-
 }
 
 type DeleteFeature struct {
@@ -122,7 +117,6 @@ func (m *ModifyStates) CommandType() Type {
 
 func (m *ModifyStates) Execute(future *utils.Future) {
 	// TODO: modify states
-
 }
 
 type ModifyTransitions struct {

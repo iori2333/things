@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"things/base/json"
 	"things/base/utils"
 	"things/core/models"
 )
@@ -16,8 +17,8 @@ func (c *QueryThing) Execute(future *utils.Future) {
 }
 
 type QueryThings struct {
-	Feature *models.Feature `json:"feature"`
-	State   string          `json:"state"`
+	Features models.Features `json:"feature"`
+	State    string          `json:"state"`
 }
 
 func (c *QueryThings) CommandType() Type {
@@ -25,7 +26,6 @@ func (c *QueryThings) CommandType() Type {
 }
 
 func (c *QueryThings) Execute(future *utils.Future) {
-
 }
 
 type QueryFeature struct {
@@ -42,8 +42,8 @@ func (c *QueryFeature) Execute(future *utils.Future) {
 }
 
 type QueryFeatures struct {
-	ThingId models.ThingId  `json:"thing_id"`
-	Filter  *models.Feature `json:"filter"`
+	ThingId models.ThingId `json:"thing_id"`
+	Filter  json.Value     `json:"filter"`
 }
 
 func (c *QueryFeatures) CommandType() Type {

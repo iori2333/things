@@ -1,38 +1,17 @@
 package models
 
 import (
+	ejson "encoding/json"
 	"fmt"
 	"things/base/json"
+	"things/base/utils"
 )
-
-// Feature indicates any properties of things which can be changed over time.
-// User can modify the value of a feature via commands.
-// A feature is represented as a json object.
-type Feature struct {
-	Id         string
-	Properties json.Object `json:"properties"`
-}
-
-func (f *Feature) Select(path string) (json.Value, bool) {
-	obj, ok := f.Properties.Object()
-	if !ok {
-		return nil, false
-	}
-	return obj.Get(path)
-}
-
-func (f *Feature) Clone() *Feature {
-	return &Feature{
-		Id:         f.Id,
-		Properties: f.Properties.Clone().(json.Object),
-	}
-}
 
 // Features is a collection of thing Features.
 // It can be designed as whether mutable or immutable.
-type Features map[string]*Feature
+type Features json.Object
 
-func (fs Features) Create(name string, feature *Feature) (Features, error) {
+func (fs Features) Create(name string, feature json.Value) (Features, error) {
 	if _, ok := fs[name]; ok {
 		return nil, fmt.Errorf("feature %s already exists", name)
 	}
@@ -41,18 +20,25 @@ func (fs Features) Create(name string, feature *Feature) (Features, error) {
 	return ret, nil
 }
 
-func (fs Features) Modify(name string, feature *Feature) (Features, *Feature) {
+func (fs Features) Modify(name string, feature json.Value) (Features, json.Value) {
 	ret := fs.Clone()
-	if feats, ok := fs[name]; !ok {
+	feats, ok := ret[name]
+	if !ok {
 		ret[name] = feature
 		return ret, feature
-	} else {
-		json.MergeObject(feats.Properties, feature.Properties)
-		return ret, feats
 	}
+	obj1, ok1 := feature.Object()
+	obj2, ok2 := feats.Object()
+	if ok1 && ok2 {
+		json.MergeObject(obj1, obj2)
+		ret[name] = obj1
+	} else {
+		ret[name] = feature
+	}
+	return ret, feats
 }
 
-func (fs Features) Overwrite(name string, feature *Feature) Features {
+func (fs Features) Overwrite(name string, feature json.Value) Features {
 	ret := fs.Clone()
 	ret[name] = feature
 	return ret
@@ -64,22 +50,24 @@ func (fs Features) Delete(name string) Features {
 	return ret
 }
 
-func (fs Features) Get(name string) (f *Feature, ok bool) {
+func (fs Features) Get(name string) (f json.Value, ok bool) {
 	f, ok = fs[name]
 	return
 }
 
-func (fs Features) List() (ret []*Feature) {
-	for _, v := range fs {
-		ret = append(ret, v)
-	}
-	return
+func (fs Features) Clone() Features {
+	return utils.CloneMap(fs)
 }
 
-func (fs Features) Clone() Features {
-	ret := make(Features)
-	for k, v := range fs {
-		ret[k] = v.Clone()
+func (fs *Features) UnmarshalJSON(data []byte) error {
+	obj := make(map[string]any)
+	if err := ejson.Unmarshal(data, &obj); err != nil {
+		return err
 	}
-	return ret
+	objs, err := json.ToObject(obj)
+	if err != nil {
+		return err
+	}
+	*fs = Features(objs)
+	return nil
 }
