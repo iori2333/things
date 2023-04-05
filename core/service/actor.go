@@ -34,5 +34,4 @@ func Start(ctx context.Context, config *Config) {
 	}
 	system.Register(system.CORE, actor)
 	actor.Logger.Println("Started Core service")
-	<-ctx.Done()
 }

@@ -24,7 +24,6 @@ func Start(ctx context.Context, config *Config) {
 	actor.Database = actor.GetDatabase(config.Database)
 	system.Register(system.PERSISTENCE, actor)
 	actor.Logger.Println("Started Persistence service")
-	<-ctx.Done()
 }
 
 func (a *Actor) Execute() error {
