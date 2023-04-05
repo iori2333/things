@@ -9,7 +9,7 @@ import (
 // Transition defines the behavior of a thing
 // let f <- Transition, x <- Inputs, then NextState <- f(x)
 type Transition struct {
-	Name        string      `json:"name"`
+	Name        string      `json:"message_name"`
 	MessageType MessageType `json:"message_type"`
 	NextState   string      `json:"next_state"`
 }

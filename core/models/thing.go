@@ -70,16 +70,14 @@ func (t *Thing) Validate() error {
 	if t.ThingId.Namespace == "" || t.ThingId.Id == "" {
 		return fmt.Errorf("invalid thing id: %v", t.ThingId)
 	}
-	states := make(map[string]struct{})
-	for name := range t.States {
-		states[name] = struct{}{}
-	}
-	if _, ok := states[t.StateName]; !ok {
+
+	if _, ok := t.States[t.StateName]; !ok {
 		return fmt.Errorf("initial state %s not found", t.StateName)
 	}
+
 	for _, state := range t.States {
 		for _, transition := range state {
-			if _, ok := states[transition.NextState]; !ok {
+			if _, ok := t.States[transition.NextState]; !ok {
 				return fmt.Errorf("state %s not found", transition.NextState)
 			}
 		}
