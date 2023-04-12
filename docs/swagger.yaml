@@ -1,0 +1,280 @@
+definitions:
+  errors.Status:
+    enum:
+    - 400
+    - 401
+    - 403
+    - 404
+    - 409
+    - 500
+    type: integer
+    x-enum-varnames:
+    - StatusInvalid
+    - StatusUnauthorized
+    - StatusForbidden
+    - StatusNotFound
+    - StatusConflict
+    - StatusDefault
+  json.Type:
+    enum:
+    - number
+    - boolean
+    - string
+    - Array
+    - Object
+    type: string
+    x-enum-varnames:
+    - NumberType
+    - BooleanType
+    - StringType
+    - ArrayType
+    - ObjectType
+  models.Features:
+    additionalProperties: {}
+    type: object
+  models.MessageType:
+    additionalProperties:
+      $ref: '#/definitions/json.Type'
+    type: object
+  models.States:
+    additionalProperties:
+      $ref: '#/definitions/models.Transitions'
+    type: object
+  models.ThingId:
+    properties:
+      id:
+        type: string
+      namespace:
+        type: string
+    type: object
+  models.Transition:
+    properties:
+      message_name:
+        type: string
+      message_type:
+        $ref: '#/definitions/models.MessageType'
+      next_state:
+        type: string
+    type: object
+  models.Transitions:
+    additionalProperties:
+      $ref: '#/definitions/models.Transition'
+    type: object
+  v1.Error:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+      status:
+        $ref: '#/definitions/errors.Status'
+    type: object
+  v1.Thing:
+    properties:
+      features:
+        $ref: '#/definitions/models.Features'
+      state:
+        type: string
+      states:
+        additionalProperties:
+          items:
+            $ref: '#/definitions/models.Transition'
+          type: array
+        type: object
+      thing_id:
+        $ref: '#/definitions/models.ThingId'
+    type: object
+info:
+  contact: {}
+  description: Access things, connections via HTTP.
+  title: Things HTTP API
+paths:
+  /things:
+    get:
+      description: List all things and thing details stored in system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Retrieved Things
+          schema:
+            items:
+              $ref: '#/definitions/v1.Thing'
+            type: array
+      summary: List all things
+      tags:
+      - Things
+    post:
+      consumes:
+      - application/json
+      description: Create a new thing
+      parameters:
+      - description: thing to create
+        in: body
+        name: thing
+        required: true
+        schema:
+          $ref: '#/definitions/v1.Thing'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created Thing
+          schema:
+            $ref: '#/definitions/v1.Thing'
+        "400":
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+      summary: Create a thing
+      tags:
+      - Things
+  /things/{namespace}/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a thing from the system
+      parameters:
+      - description: namespace of the thing
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: id of the thing
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated Thing
+          schema:
+            $ref: '#/definitions/v1.Thing'
+        "201":
+          description: Created Thing
+          schema:
+            $ref: '#/definitions/v1.Thing'
+        "400":
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+      summary: Delete a thing
+      tags:
+      - Things
+    get:
+      description: List details of a thing stored in system
+      parameters:
+      - description: namespace of the thing
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: id of the thing
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Retrieved Thing
+          schema:
+            $ref: '#/definitions/v1.Thing'
+        "400":
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+        "404":
+          description: NotFound
+          schema:
+            $ref: '#/definitions/v1.Error'
+      summary: List thing details
+      tags:
+      - Things
+    post:
+      consumes:
+      - application/json
+      description: Replace thing properties. ThingID and Namespace cannot be changed,
+        thus they are ignored. If thing to replace does not exist, it will be created.
+      parameters:
+      - description: namespace of the thing
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: id of the thing
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: new properties of the thing
+        in: body
+        name: thing
+        required: true
+        schema:
+          $ref: '#/definitions/v1.Thing'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Replaced Thing
+          schema:
+            $ref: '#/definitions/v1.Thing'
+        "201":
+          description: Created Thing
+          schema:
+            $ref: '#/definitions/v1.Thing'
+        "400":
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+      summary: Replace thing properties
+      tags:
+      - Things
+    put:
+      consumes:
+      - application/json
+      description: Update thing properties. ThingID and Namespace cannot be changed,
+        thus they are ignored. If thing to update does not exist, it will be created.
+      parameters:
+      - description: namespace of the thing
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: id of the thing
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: updated properties of the thing
+        in: body
+        name: thing
+        required: true
+        schema:
+          $ref: '#/definitions/v1.Thing'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated Thing
+          schema:
+            $ref: '#/definitions/v1.Thing'
+        "201":
+          description: Created Thing
+          schema:
+            $ref: '#/definitions/v1.Thing'
+        "400":
+          description: Invalid Request
+          schema:
+            $ref: '#/definitions/v1.Error'
+      summary: Update thing properties
+      tags:
+      - Things
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"

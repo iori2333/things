@@ -17,8 +17,8 @@ func (c *QueryThing) Execute(future *utils.Future) {
 }
 
 type QueryThings struct {
-	Features models.Features `json:"feature"`
-	State    string          `json:"state"`
+	Features models.Features `json:"feature,omitempty"`
+	State    string          `json:"state,omitempty"`
 }
 
 func (c *QueryThings) CommandType() Type {
@@ -26,6 +26,7 @@ func (c *QueryThings) CommandType() Type {
 }
 
 func (c *QueryThings) Execute(future *utils.Future) {
+	future.SetResult([]*models.Thing{})
 }
 
 type QueryFeature struct {

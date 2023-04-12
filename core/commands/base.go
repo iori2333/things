@@ -2,7 +2,7 @@ package commands
 
 import (
 	"encoding/json"
-	"errors"
+	"things/base/errors"
 	"things/base/utils"
 )
 
@@ -84,6 +84,6 @@ func Unmarshal(t Type, data []byte) (Interface, error) {
 	case TypeTellThing:
 		return unmarshal[TellThing](data)
 	default:
-		return nil, errors.New("unknown command type")
+		return nil, errors.Invalid("InvalidCommandType", "Invalid command type: %d", t)
 	}
 }

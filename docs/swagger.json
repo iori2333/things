@@ -1,0 +1,411 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Access things, connections via HTTP.",
+        "title": "Things HTTP API",
+        "contact": {}
+    },
+    "paths": {
+        "/things": {
+            "get": {
+                "description": "List all things and thing details stored in system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Things"
+                ],
+                "summary": "List all things",
+                "responses": {
+                    "200": {
+                        "description": "Retrieved Things",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/v1.Thing"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new thing",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Things"
+                ],
+                "summary": "Create a thing",
+                "parameters": [
+                    {
+                        "description": "thing to create",
+                        "name": "thing",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.Thing"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created Thing",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Thing"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/things/{namespace}/{id}": {
+            "get": {
+                "description": "List details of a thing stored in system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Things"
+                ],
+                "summary": "List thing details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace of the thing",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "id of the thing",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retrieved Thing",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Thing"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "NotFound",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update thing properties. ThingID and Namespace cannot be changed, thus they are ignored. If thing to update does not exist, it will be created.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Things"
+                ],
+                "summary": "Update thing properties",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace of the thing",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "id of the thing",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "updated properties of the thing",
+                        "name": "thing",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.Thing"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated Thing",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Thing"
+                        }
+                    },
+                    "201": {
+                        "description": "Created Thing",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Thing"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Replace thing properties. ThingID and Namespace cannot be changed, thus they are ignored. If thing to replace does not exist, it will be created.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Things"
+                ],
+                "summary": "Replace thing properties",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace of the thing",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "id of the thing",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new properties of the thing",
+                        "name": "thing",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.Thing"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Replaced Thing",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Thing"
+                        }
+                    },
+                    "201": {
+                        "description": "Created Thing",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Thing"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a thing from the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Things"
+                ],
+                "summary": "Delete a thing",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "namespace of the thing",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "id of the thing",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated Thing",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Thing"
+                        }
+                    },
+                    "201": {
+                        "description": "Created Thing",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Thing"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Error"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "errors.Status": {
+            "type": "integer",
+            "enum": [
+                400,
+                401,
+                403,
+                404,
+                409,
+                500
+            ],
+            "x-enum-varnames": [
+                "StatusInvalid",
+                "StatusUnauthorized",
+                "StatusForbidden",
+                "StatusNotFound",
+                "StatusConflict",
+                "StatusDefault"
+            ]
+        },
+        "json.Type": {
+            "type": "string",
+            "enum": [
+                "number",
+                "boolean",
+                "string",
+                "Array",
+                "Object"
+            ],
+            "x-enum-varnames": [
+                "NumberType",
+                "BooleanType",
+                "StringType",
+                "ArrayType",
+                "ObjectType"
+            ]
+        },
+        "models.Features": {
+            "type": "object",
+            "additionalProperties": {}
+        },
+        "models.MessageType": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/json.Type"
+            }
+        },
+        "models.States": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/models.Transitions"
+            }
+        },
+        "models.ThingId": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Transition": {
+            "type": "object",
+            "properties": {
+                "message_name": {
+                    "type": "string"
+                },
+                "message_type": {
+                    "$ref": "#/definitions/models.MessageType"
+                },
+                "next_state": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Transitions": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/models.Transition"
+            }
+        },
+        "v1.Error": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/errors.Status"
+                }
+            }
+        },
+        "v1.Thing": {
+            "type": "object",
+            "properties": {
+                "features": {
+                    "$ref": "#/definitions/models.Features"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "states": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/models.Transition"
+                        }
+                    }
+                },
+                "thing_id": {
+                    "$ref": "#/definitions/models.ThingId"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BasicAuth": {
+            "type": "basic"
+        }
+    }
+}

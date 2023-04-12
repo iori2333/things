@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"things/base/errors"
 	"time"
 )
 
@@ -16,27 +17,27 @@ type Future struct {
 }
 
 func NewFuture(timeout time.Duration) *Future {
-	var ctx context.Context
-	var cancel context.CancelFunc
+	f := &Future{}
+
 	if timeout > 0 {
-		ctx, cancel = context.WithTimeout(ctx, timeout)
+		f.ctx, f.cancel = context.WithTimeout(context.TODO(), timeout)
+		f.err = errors.Default("FutureTimeout", "future timed out after %s.", timeout.String())
 	} else {
-		ctx, cancel = context.WithCancel(ctx)
+		f.ctx, f.cancel = context.WithCancel(context.TODO())
 	}
-	f := &Future{
-		ctx:    ctx,
-		cancel: cancel,
-	}
+
 	go f.Execute()
 	return f
 }
 
 func (f *Future) SetResult(value any) {
 	f.result = value
+	f.err = nil
 	f.cancel()
 }
 
 func (f *Future) SetError(err error) {
+	f.result = nil
 	f.err = err
 	f.cancel()
 }
@@ -65,4 +66,16 @@ func (f *Future) OnResult(onResult func(v any)) {
 
 func (f *Future) OnError(onError func(err error)) {
 	f.onErrors = append(f.onErrors, onError)
+}
+
+func UnwrapFuture[T any](future *Future) (v T, err error) {
+	result, err := future.Wait()
+	if err != nil {
+		return
+	}
+	v, ok := result.(T)
+	if !ok {
+		err = errors.Invalid("UnwrapFuture", "Received unexpected result type")
+	}
+	return
 }
